@@ -3,6 +3,7 @@ package sandoval.brian.pokeApi.service;
 import jakarta.persistence.Column;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sandoval.brian.pokeApi.exception.ResourceNotFundException;
 import sandoval.brian.pokeApi.model.Pokemon;
 import sandoval.brian.pokeApi.repository.PokemonRepository;
 
@@ -19,11 +20,11 @@ public class PokemonService {
         return repository.findAll();
     }
 
-    public Optional<Pokemon> obtenerPorId(Long id) {
+    public Pokemon obtenerPorId(Long id) {
         if (id != null) {
-            return repository.findById(id);
+            return repository.findById(id).orElseThrow(()-> new ResourceNotFundException("Pokemon con ID: "+id+" no encontrado."));
         }
-        return Optional.empty();
+        return null;
     }
 
     public Pokemon crear(Pokemon pokemon) {
@@ -35,7 +36,7 @@ public class PokemonService {
 
     public Pokemon actualizarCompleto(Long id, Pokemon pokemon) {
         Pokemon encontrado = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pokemon no encontrado con id " + id));
+                .orElseThrow(() -> new ResourceNotFundException("No se puede actualizar, pokemon no encontrado con ID " + id));
 
         encontrado.setNombre(pokemon.getNombre());
         encontrado.setTipo(pokemon.getTipo());
@@ -47,7 +48,7 @@ public class PokemonService {
 
 
     public Pokemon actualizarParcial(Long id, Pokemon datos) {
-        Pokemon encontrado = repository.findById(id).orElseThrow(() -> new RuntimeException("Pokemon no encontrado con id " + id));
+        Pokemon encontrado = repository.findById(id).orElseThrow(() -> new ResourceNotFundException("Pokemon no encontrado con ID " + id));
 
         if (datos.getNombre() != null) {
             encontrado.setNombre(datos.getNombre());
@@ -74,11 +75,10 @@ public class PokemonService {
         return repository.save(encontrado);
     }
 
-    public boolean eliminar(Long id) {
+    public void eliminar(Long id) {
         if (!repository.existsById(id)) {
-            return false;
+            throw new ResourceNotFundException("No se puede eliminar, pokemon no encontrado, ID: " + id);
         }
         repository.deleteById(id);
-        return true;
     }
 }

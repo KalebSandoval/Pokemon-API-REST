@@ -1,5 +1,6 @@
 package sandoval.brian.pokeApi.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import sandoval.brian.pokeApi.model.Pokemon;
@@ -15,33 +16,33 @@ public class PokemonController {
     private PokemonService service;
 
     @GetMapping
-    public List<Pokemon> obtenerTodos(){
+    public List<Pokemon> obtenerTodos() {
         return service.obtenerTodos();
     }
 
     @GetMapping("/{id}")
-    public Optional<Pokemon> obtenerPorId(@PathVariable Long id){
+    public Pokemon obtenerPorId(@PathVariable Long id) {
         return service.obtenerPorId(id);
     }
 
     @PostMapping
-    public Pokemon crearPokemon(@RequestBody Pokemon pokemon){
+    public Pokemon crearPokemon(@Valid @RequestBody Pokemon pokemon) {
         return service.crear(pokemon);
     }
 
     @PutMapping("/{id}")
-    public Pokemon actualizarCompleto(@PathVariable Long id,@RequestBody Pokemon pokemon){
+    public Pokemon actualizarCompleto(@PathVariable Long id, @Valid @RequestBody Pokemon pokemon) {
         return service.actualizarCompleto(id, pokemon);
     }
 
     @PatchMapping("/{id}")
-    public Pokemon actualizarParcial(@PathVariable Long id, @RequestBody Pokemon pokemon){
+    public Pokemon actualizarParcial(@PathVariable Long id, @RequestBody Pokemon pokemon) {
         return service.actualizarParcial(id, pokemon);
     }
 
     @DeleteMapping("/{id}")
-    public boolean eliminar(@PathVariable Long id){
-        return service.eliminar(id);
+    public void eliminar(@PathVariable Long id) {
+        service.eliminar(id);
     }
 
 }
